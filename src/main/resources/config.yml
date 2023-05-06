@@ -49,6 +49,7 @@ test:
     death: "@d kill @player with @hp"
     join: "@player join the ffa"
     quit: "@player quit the ffa"
+    already: "You already in arena ,if you want to join others that need to quit the this arena."
   #当前竞技场在gui中的显示
   form:
     button: "TEST \n @online "

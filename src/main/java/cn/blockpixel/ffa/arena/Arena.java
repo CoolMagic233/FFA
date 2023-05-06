@@ -31,8 +31,11 @@ package cn.blockpixel.ffa.arena;
    }
    private Level level; private Position position;
    public void join(Player player) {
-     if (!this.players.contains(player)) {
+     if (!(FFA.getInstance().isPlayingInArenas(player))) {
        this.players.add(player);
+     }else {
+       player.sendMessage(this.config.getString(this.arena + ".message.already" , "You already in arena ,if you want to join others that need to quit the this arena.").replace("@player", player.getName()));
+       return;
      }
      for (Player player1 : this.players) {
        player1.sendMessage(this.config.getString(this.arena + ".message.join").replace("@player", player.getName()));
@@ -44,17 +47,17 @@ package cn.blockpixel.ffa.arena;
      player.setHealth(this.config.getInt(this.arena + ".initialHP"));
      HashMap<Integer, Item> abc = new HashMap<>();
      for (int i = 0; i < 36; i++) {
-       abc.put(Integer.valueOf(i), player.getInventory().getItem(i));
+       abc.put(i, player.getInventory().getItem(i));
      }
      this.invSave.put(player, abc);
      player.getInventory().clearAll();
      for (String s : this.config.getStringList(this.arena + ".item")) {
-       Item item = Item.get(this.config.getInt(this.arena + "." + s + ".id"), Integer.valueOf(this.config.getInt(this.arena + "." + s + ".meta")), this.config.getInt(this.arena + "." + s + ".count"));
+       Item item = Item.get(this.config.getInt(this.arena + "." + s + ".id"), this.config.getInt(this.arena + "." + s + ".meta"), this.config.getInt(this.arena + "." + s + ".count"));
        for (String e : this.config.getStringList(this.arena + "." + s + ".enchantment")) {
          String[] enchantment = e.split(":");
-         item.addEnchantment(new Enchantment[] { Enchantment.get(Integer.parseInt(enchantment[0])).setLevel(Integer.parseInt(enchantment[1])) });
+         item.addEnchantment(Enchantment.get(Integer.parseInt(enchantment[0])).setLevel(Integer.parseInt(enchantment[1])));
        }
-       player.getInventory().addItem(new Item[] { item });
+       player.getInventory().addItem(item);
      }
      for (String s : this.config.getStringList(this.arena + ".effect")) {
        player.addEffect(FFA.getInstance().strToEffect(s));
@@ -71,7 +74,7 @@ package cn.blockpixel.ffa.arena;
        player1.sendMessage(this.config.getString(this.arena + ".message.quit").replace("@player", player.getName()));
      }
      for (int i = 0; i < 36; i++) {
-       player.getInventory().setItem(i, (Item)((HashMap)this.invSave.get(player)).get(Integer.valueOf(i)));
+       player.getInventory().setItem(i, (Item)((HashMap<?, ?>)this.invSave.get(player)).get(i));
      }
      this.invSave.remove(player);
      ffaListener.removeLastKiller(player);

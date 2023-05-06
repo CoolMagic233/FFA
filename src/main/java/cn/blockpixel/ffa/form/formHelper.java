@@ -35,10 +35,10 @@ public class formHelper
       FormResponseSimple response = (FormResponseSimple)e.getResponse();
       if (response != null &&
         e.getFormID() == FORM_ARENAS)
-        for (Map.Entry<String, Arena> entry : (Iterable<Map.Entry<String, Arena>>)FFA.getInstance().getArenas().entrySet()) {
-          String s = config.getString((String)entry.getKey() + ".form.button").replace("@online", String.valueOf(((Arena)entry.getValue()).getArenaSize()));
+        for (Map.Entry<String, Arena> entry : FFA.getInstance().getArenas().entrySet()) {
+          String s = config.getString(entry.getKey() + ".form.button").replace("@online", String.valueOf(((Arena)entry.getValue()).getArenaSize()));
           if (response.getClickedButton().getText().equals(s))
-            ((Arena)entry.getValue()).join(p);
+            entry.getValue().join(p);
         }
     }
   }

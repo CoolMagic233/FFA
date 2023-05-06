@@ -29,12 +29,6 @@
        this.arenas.put(s, new Arena(s, getConfig()));
        sendMsgToCon("Loaded arena -> " + s);
      }
-
-
-
-
-
-
      sendMsgToCon("Plugin is enabled!");
    }
    public static FFA getInstance() {
@@ -64,6 +58,13 @@
      int level = Integer.parseInt(str.split(":")[1]);
      int dur = Integer.parseInt(str.split(":")[2]);
      return Effect.getEffect(id).setAmplifier(level).setDuration(dur);
+   }
+   public boolean isPlayingInArenas(Player player){
+       boolean a = false;
+       for (Arena arena : getArenas().values()) {
+           if(arena.getArenaPlayers().contains(player)) a = true;
+       }
+       return a;
    }
  }
 
