@@ -1,0 +1,7 @@
+name: BFFA
+main: cn.blockpixel.ffa.FFA
+version: "0.0.7t2"
+api: 1.0.0
+author: "CoolMagic233"
+depend:
+  - "MemoriesOfTime-GameCore"

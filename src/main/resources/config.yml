@@ -1,0 +1,63 @@
+prefix: "FFA"
+form:
+  title: "FFA"
+  content: ""
+setting:
+  command:
+    ffa:
+      name: "ffa"
+      des: "ffa arena command"
+    quit:
+      name: "quit"
+#死亡后重生点
+defaultSpawn: "1:1:1:world"
+arena:
+  - "test"
+test:
+  #进入竞技场时给的物品(id:meta:count|id:level)
+  item:
+    - "apple"
+  apple:
+    id: 1
+    meta: 0
+    count: 2
+    enchantment: []
+  #加入时给的盔甲
+  armor:
+    head: 114514
+    breastplate: 114514
+    leg: 114514
+    boots: 1919180
+  #加入时给的一些效果
+  effect: []
+  #竞技场的世界
+  world: "test"
+  #竞技场的加入点
+  spawn: "2:2:2"
+  #加入时的初始血量
+  initialHP: 20
+  #加入时的游戏模式
+  gameMode: 2
+  #事件控制器
+  events:
+    hurt: true
+    fall: false
+    reHealth: true
+    food: true
+  #一些消息控制
+  message:
+    death: "@d kill @player with @hp"
+    join: "@player join the ffa"
+    quit: "@player quit the ffa"
+  #当前竞技场在gui中的显示
+  form:
+    button: "TEST \n @online "
+  #击杀玩家后的一些增益增益
+  increase:
+    #击杀玩家后获得的效果(效果id:效果等级:效果时长s)
+    effect:
+      "1:1:1"
+    #击杀玩家后获取的物品
+    item: []
+    command: []
+
