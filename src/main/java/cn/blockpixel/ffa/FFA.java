@@ -13,6 +13,7 @@
  import cn.nukkit.potion.Effect;
  import com.smallaswater.npc.data.RsNpcConfig;
  import com.smallaswater.npc.variable.BaseVariableV2;
+ import com.smallaswater.npc.variable.VariableManage;
 
  import java.io.File;
  import java.util.HashMap;
@@ -25,6 +26,7 @@
    public void onEnable() {
      ffa = this;
      saveDefaultConfig();
+       VariableManage.addVariableV2("FFA",RsnpcVariable.class);
      getServer().getPluginManager().registerEvents((Listener)new formHelper(), (Plugin)this);
      getServer().getPluginManager().registerEvents((Listener)new ffaListener(), (Plugin)this);
      getServer().getCommandMap().register("", (Command)new ffaCommand(getConfig().getString("setting.command.ffa.name"), getConfig().getString("setting.command.ffa.des")));
