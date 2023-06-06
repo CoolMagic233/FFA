@@ -11,6 +11,9 @@
  import cn.nukkit.plugin.Plugin;
  import cn.nukkit.plugin.PluginBase;
  import cn.nukkit.potion.Effect;
+ import com.smallaswater.npc.data.RsNpcConfig;
+ import com.smallaswater.npc.variable.BaseVariableV2;
+
  import java.io.File;
  import java.util.HashMap;
  import java.util.Map;
@@ -59,6 +62,7 @@
      int dur = Integer.parseInt(str.split(":")[2]);
      return Effect.getEffect(id).setAmplifier(level).setDuration(dur);
    }
+
    public boolean isPlayingInArenas(Player player){
        boolean a = false;
        for (Arena arena : getArenas().values()) {
@@ -66,5 +70,19 @@
        }
        return a;
    }
+   public int getPlayingCount(){
+       int count = 0;
+       for (Arena value : getArenas().values()) {
+           count = count + value.getArenaSize();
+       }
+       return count;
+   }
+ }
+ class RsnpcVariable extends BaseVariableV2{
+
+     @Override
+     public void onUpdate(Player player, RsNpcConfig rsNpcConfig) {
+         addVariable("{ffaOnline}",String.valueOf(FFA.getInstance().getPlayingCount()));
+     }
  }
 

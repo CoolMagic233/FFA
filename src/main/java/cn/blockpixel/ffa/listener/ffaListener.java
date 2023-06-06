@@ -12,6 +12,7 @@ import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.event.player.PlayerChatEvent;
 import cn.nukkit.event.player.PlayerFoodLevelChangeEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
+import cn.nukkit.event.player.PlayerRespawnEvent;
 import cn.nukkit.item.Item;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,8 +66,11 @@ public class ffaListener implements Listener {
       Arena entry = FFA.getInstance().getArenaByName((Player)e.getEntity());
       if (entry == null)
         return;  Player player = (Player)e.getEntity();
-      if (entry.isPlaying(player))
-        e.setCancelled(FFA.getInstance().getConfig().getBoolean(entry.getArenaName() + ".events.reHealth"));
+      if (entry.isPlaying(player)){
+        if(e.getRegainReason() != EntityRegainHealthEvent.CAUSE_MAGIC){
+          e.setCancelled(FFA.getInstance().getConfig().getBoolean(entry.getArenaName() + ".events.reHealth"));
+        }
+      }
     }
   }
 
@@ -139,6 +143,14 @@ public class ffaListener implements Listener {
       return;  if (entry.isPlaying(e.getPlayer()) &&
       e.getMessage().equals("hub")) {
       e.setCancelled();
+      entry.quit(e.getPlayer());
+    }
+  }
+  @EventHandler
+  public void onRespawn(PlayerRespawnEvent e){
+    Arena entry = FFA.getInstance().getArenaByName(e.getPlayer());
+    if (entry == null) return;
+    if(FFA.getInstance().isPlayingInArenas(e.getPlayer())){
       entry.quit(e.getPlayer());
     }
   }
