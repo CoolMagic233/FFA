@@ -26,7 +26,7 @@
    public void onEnable() {
      ffa = this;
      saveDefaultConfig();
-       VariableManage.addVariableV2("FFA",RsnpcVariable.class);
+     VariableManage.addVariableV2("FFA",RsnpcVariable.class);
      getServer().getPluginManager().registerEvents((Listener)new formHelper(), (Plugin)this);
      getServer().getPluginManager().registerEvents((Listener)new ffaListener(), (Plugin)this);
      getServer().getCommandMap().register("", (Command)new ffaCommand(getConfig().getString("setting.command.ffa.name"), getConfig().getString("setting.command.ffa.des")));
@@ -79,12 +79,5 @@
        }
        return count;
    }
- }
- class RsnpcVariable extends BaseVariableV2{
-
-     @Override
-     public void onUpdate(Player player, RsNpcConfig rsNpcConfig) {
-         addVariable("{ffaOnline}",String.valueOf(FFA.getInstance().getPlayingCount()));
-     }
  }
 

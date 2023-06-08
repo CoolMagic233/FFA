@@ -1,6 +1,6 @@
 name: BFFA
 main: cn.blockpixel.ffa.FFA
-version: "0.0.8"
+version: "0.0.9"
 api: 1.0.0
 author: "CoolMagic233"
 depend:

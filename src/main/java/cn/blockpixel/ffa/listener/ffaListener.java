@@ -14,6 +14,8 @@ import cn.nukkit.event.player.PlayerFoodLevelChangeEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.event.player.PlayerRespawnEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,8 +29,8 @@ public class ffaListener implements Listener {
   public void onDamage(EntityDamageEvent e) {
     if (e.getEntity() instanceof Player) {
       Arena entry = FFA.getInstance().getArenaByName((Player)e.getEntity());
-      if (entry == null)
-        return;  Player player = (Player)e.getEntity();
+      if (entry == null) return;
+      Player player = (Player)e.getEntity();
       if (entry.isPlaying(player)) {
         if (e.getCause() == EntityDamageEvent.DamageCause.FALL) {
           e.setCancelled(FFA.getInstance().getConfig().getBoolean(entry.getArenaName() + ".events.fall"));
@@ -37,21 +39,19 @@ public class ffaListener implements Listener {
           if (lastKiller.containsKey(e.getEntity())) {
             Player killer = lastKiller.get(e.getEntity());
             for (String s : entry.getConfig().getStringList(entry.getArenaName() + ".increase.item")) {
-              Item item = Item.get(Integer.parseInt(s.split(":")[0]), Integer.valueOf(Integer.parseInt(s.split(":")[1])), Integer.parseInt(s.split(":")[2]));
-              killer.getInventory().addItem(new Item[] { item });
+              Item item = Item.get(Integer.parseInt(s.split(":")[0]), Integer.parseInt(s.split(":")[1]), Integer.parseInt(s.split(":")[2]));
+              killer.getInventory().addItem(item);
             }
             for (String s : entry.getConfig().getStringList(entry.getArenaName() + ".increase.effect")) {
               killer.addEffect(FFA.getInstance().strToEffect(s));
             }
             for (String s : entry.getConfig().getStringList(entry.getArenaName() + ".increase.command")) {
-              if (player.isOp()) player.sendMessage("aaa");
               String[] cmd = s.split("&");
               if (cmd.length > 1 && "con".equals(cmd[1])) {
                 FFA.getInstance().getServer().dispatchCommand((CommandSender)FFA.getInstance().getServer().getConsoleSender(), cmd[0].replace("@p", killer.getName())); continue;
               }
               FFA.getInstance().getServer().dispatchCommand((CommandSender)player, cmd[0].replace("@p", killer.getName()));
             }
-
             entry.sendMsgToArena(entry.getConfig().getString(entry.getArenaName() + ".message.death").replace("@d", killer.getName()).replace("@player", player.getName()).replace("@hp", String.valueOf(player.getHealth())));
           }
           e.setCancelled();
@@ -87,6 +87,21 @@ public class ffaListener implements Listener {
       }
       if (e.getFinalDamage() + 1.0F >= e.getEntity().getHealth()) {
           if (entry.isPlaying(player)) {
+            //flush inventory
+            player.getInventory().clearAll();
+            for (String s : entry.getConfig().getStringList(entry.getArenaName() + ".item")) {
+              Item item = Item.get(entry.getConfig().getInt(entry.getArenaName() + "." + s + ".id"), entry.getConfig().getInt(entry.getArenaName() + "." + s + ".meta"), entry.getConfig().getInt(entry.getArenaName() + "." + s + ".count"));
+              for (String en : entry.getConfig().getStringList(entry.getArenaName() + "." + s + ".enchantment")) {
+                String[] enchantment = en.split(":");
+                item.addEnchantment(Enchantment.get(Integer.parseInt(enchantment[0])).setLevel(Integer.parseInt(enchantment[1])));
+              }
+              player.getInventory().addItem(item);
+            }
+            //flush armor
+            player.getInventory().setArmorItem(0, Item.get(entry.getConfig().getInt(entry.getArenaName() + ".armor.head")));
+            player.getInventory().setArmorItem(1, Item.get(entry.getConfig().getInt(entry.getArenaName()+ ".armor.breastplate")));
+            player.getInventory().setArmorItem(2, Item.get(entry.getConfig().getInt(entry.getArenaName() + ".armor.leg")));
+            player.getInventory().setArmorItem(3, Item.get(entry.getConfig().getInt(entry.getArenaName() + ".armor.boots")));
           for (String s : entry.getConfig().getStringList(entry.getArenaName() + ".increase.item")) {
             Item item = Item.get(Integer.parseInt(s.split(":")[0]), Integer.parseInt(s.split(":")[1]), Integer.parseInt(s.split(":")[2]));
             player.getInventory().addItem(item);
@@ -95,7 +110,6 @@ public class ffaListener implements Listener {
             player.addEffect(FFA.getInstance().strToEffect(s));
           }
           for (String s : entry.getConfig().getStringList(entry.getArenaName() + ".increase.command")) {
-            if (player.isOp()) player.sendMessage("aaa");
             String[] cmd = s.split("&");
             if (cmd.length > 1 && "con".equals(cmd[1])) {
               FFA.getInstance().getServer().dispatchCommand((CommandSender)FFA.getInstance().getServer().getConsoleSender(), cmd[0].replace("@p", lastDamageName)); continue;
