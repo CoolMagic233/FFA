@@ -61,4 +61,7 @@ test:
     #击杀玩家后获取的物品
     item: []
     command: []
+  #玩家被击杀后执行的指令
+  death:
+    command: []
 

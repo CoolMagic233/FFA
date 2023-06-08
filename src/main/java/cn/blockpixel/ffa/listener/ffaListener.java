@@ -116,6 +116,13 @@ public class ffaListener implements Listener {
             }
             FFA.getInstance().getServer().dispatchCommand((CommandSender)player, cmd[0].replace("@p", lastDamageName));
           }
+          for (String s : entry.getConfig().getStringList(entry.getArenaName() + ".death.command")) {
+            String[] cmd = s.split("&");
+            if (cmd.length > 1 && "con".equals(cmd[1])) {
+              FFA.getInstance().getServer().dispatchCommand((CommandSender)FFA.getInstance().getServer().getConsoleSender(), cmd[0].replace("@p", e.getEntity().getName())); continue;
+            }
+            FFA.getInstance().getServer().dispatchCommand((CommandSender)player, cmd[0].replace("@p", e.getEntity().getName()));
+          }
 
           String die = null;
           Player diePlayer = null;
