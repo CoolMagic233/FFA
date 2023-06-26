@@ -9,6 +9,13 @@ setting:
       des: "ffa arena command"
     quit:
       name: "quit"
+  cooldown:
+    ender_pearl:
+      enable: true
+      enable_world:
+        - Nodebuff
+      # This time is an Integer, in seconds .
+      cooldown_time: 5
 #死亡后重生点
 defaultSpawn: "1:1:1:world"
 arena:
@@ -50,6 +57,7 @@ test:
     join: "@player join the ffa"
     quit: "@player quit the ffa"
     already: "You already in arena ,if you want to join others that need to quit the this arena."
+    cooldown_ender_pearl: "This item is cooling down, please use it later."
   #当前竞技场在gui中的显示
   form:
     button: "TEST \n @online "

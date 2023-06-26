@@ -11,6 +11,7 @@
  import cn.nukkit.plugin.Plugin;
  import cn.nukkit.plugin.PluginBase;
  import cn.nukkit.potion.Effect;
+ import cn.nukkit.scheduler.Task;
  import com.smallaswater.npc.data.RsNpcConfig;
  import com.smallaswater.npc.variable.BaseVariableV2;
  import com.smallaswater.npc.variable.VariableManage;
@@ -34,6 +35,7 @@
        this.arenas.put(s, new Arena(s, getConfig()));
        sendMsgToCon("Loaded arena -> " + s);
      }
+
      sendMsgToCon("Plugin is enabled!");
    }
    public static FFA getInstance() {

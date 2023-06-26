@@ -1,6 +1,8 @@
 package cn.blockpixel.ffa.listener;
 
 import cn.blockpixel.ffa.FFA;
+import cn.blockpixel.ffa.Utils.Cooldown;
+import cn.blockpixel.ffa.Utils.Utils;
 import cn.blockpixel.ffa.arena.Arena;
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
@@ -9,15 +11,13 @@ import cn.nukkit.event.Listener;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
-import cn.nukkit.event.player.PlayerChatEvent;
-import cn.nukkit.event.player.PlayerFoodLevelChangeEvent;
-import cn.nukkit.event.player.PlayerQuitEvent;
-import cn.nukkit.event.player.PlayerRespawnEvent;
+import cn.nukkit.event.player.*;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemEnderPearl;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.scheduler.Task;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ffaListener implements Listener {
   private static String lastDamageName;
@@ -25,6 +25,24 @@ public class ffaListener implements Listener {
   public static void removeLastKiller(Player p) {
     lastKiller.remove(p);
   }
+  private List<Cooldown> cooldown = new ArrayList<>();
+
+  public ffaListener() {
+     FFA.getInstance().getServer().getScheduler().scheduleRepeatingTask(new Task() {
+      @Override
+      public void onRun(int i) {
+        Iterator<Cooldown> iterator = cooldown.iterator();
+        while (iterator.hasNext()){
+          Cooldown cooldown1 = iterator.next();
+          cooldown1.update();
+          if(cooldown1.getCooldown() <= 0){
+            iterator.remove();
+          }
+        }
+      }
+    },20);
+  }
+
   @EventHandler
   public void onDamage(EntityDamageEvent e) {
     if (e.getEntity() instanceof Player) {
@@ -75,6 +93,26 @@ public class ffaListener implements Listener {
   }
 
   @EventHandler
+  public void onUse(PlayerInteractEvent e){
+    Arena arena = FFA.getInstance().getArenaByName(e.getPlayer());
+    if (arena == null) return;
+    if(arena.getConfig().getBoolean("setting.cooldown.ender_pearl.enable")){
+      if(e.getItem().getId() == new ItemEnderPearl().getId()){
+         if(arena.getConfig().getStringList("setting.cooldown.ender_pearl.enable_world").contains(arena.getArenaName())){
+            if(Utils.getCoolDowns(e.getPlayer(),cooldown) == null){
+              cooldown.add(new Cooldown(e.getPlayer(),arena.getConfig().getInt("setting.cooldown.ender_pearl.cooldown_time")));
+              return;
+            }
+            if(Utils.getCoolDowns(e.getPlayer(),cooldown).getCooldown() >= 1){
+              e.getPlayer().sendMessage(arena.getConfig().getString(arena.getArenaName() + ".message.cooldown_ender_pearl"," "));
+              e.setCancelled();
+            }
+         }
+      }
+    }
+  }
+
+  @EventHandler
   public void onDtoD(EntityDamageByEntityEvent e) {
     if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
       Player player = (Player)e.getDamager();
@@ -102,6 +140,7 @@ public class ffaListener implements Listener {
             player.getInventory().setArmorItem(1, Item.get(entry.getConfig().getInt(entry.getArenaName()+ ".armor.breastplate")));
             player.getInventory().setArmorItem(2, Item.get(entry.getConfig().getInt(entry.getArenaName() + ".armor.leg")));
             player.getInventory().setArmorItem(3, Item.get(entry.getConfig().getInt(entry.getArenaName() + ".armor.boots")));
+            //player increase
           for (String s : entry.getConfig().getStringList(entry.getArenaName() + ".increase.item")) {
             Item item = Item.get(Integer.parseInt(s.split(":")[0]), Integer.parseInt(s.split(":")[1]), Integer.parseInt(s.split(":")[2]));
             player.getInventory().addItem(item);
@@ -109,6 +148,7 @@ public class ffaListener implements Listener {
           for (String s : entry.getConfig().getStringList(entry.getArenaName() + ".increase.effect")) {
             player.addEffect(FFA.getInstance().strToEffect(s));
           }
+          // kill and death command
           for (String s : entry.getConfig().getStringList(entry.getArenaName() + ".increase.command")) {
             String[] cmd = s.split("&");
             if (cmd.length > 1 && "con".equals(cmd[1])) {
@@ -142,9 +182,9 @@ public class ffaListener implements Listener {
   @EventHandler
   public void onQuit(PlayerQuitEvent e) {
     Player player = e.getPlayer();
-    for (Map.Entry<String, Arena> entry : (Iterable<Map.Entry<String, Arena>>)FFA.getInstance().getArenas().entrySet()) {
-      if (((Arena)entry.getValue()).isPlaying(player)) {
-        ((Arena)entry.getValue()).getArenaPlayers().remove(player);
+    for (Map.Entry<String, Arena> entry : FFA.getInstance().getArenas().entrySet()) {
+      if (entry.getValue().isPlaying(player)) {
+        entry.getValue().getArenaPlayers().remove(player);
       }
     }
   }
@@ -160,12 +200,10 @@ public class ffaListener implements Listener {
   @EventHandler
   public void onChat(PlayerChatEvent e) {
     Arena entry = FFA.getInstance().getArenaByName(e.getPlayer());
-    if (entry == null)
-      return;  if (entry.isPlaying(e.getPlayer()) &&
-      e.getMessage().equals("hub")) {
-      e.setCancelled();
-      entry.quit(e.getPlayer());
-    }
+    if (entry == null) return;
+    String message = e.getMessage();
+    entry.sendMsgToArena("<"+e.getPlayer().getName()+"> "+message);
+    e.setCancelled();
   }
   @EventHandler
   public void onRespawn(PlayerRespawnEvent e){
