@@ -3,6 +3,7 @@ form:
   title: "FFA"
   content: ""
 setting:
+  buttonImage: false
   command:
     ffa:
       name: "ffa"
@@ -63,6 +64,7 @@ test:
   #当前竞技场在gui中的显示
   form:
     button: "TEST \n @online "
+    image: "texture/items/apple"
   #击杀玩家后的一些增益增益
   increase:
     #击杀玩家后获得的效果(效果id:效果等级:效果时长s)

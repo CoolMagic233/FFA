@@ -23,11 +23,13 @@
  public class FFA extends PluginBase {
    private final Map<String, Arena> arenas = new HashMap<>();
    private static FFA ffa;
+   public boolean buttonImage;
 
    public void onEnable() {
      ffa = this;
      saveDefaultConfig();
      VariableManage.addVariableV2("FFA",RsnpcVariable.class);
+     buttonImage = getConfig().getBoolean("setting.buttonImage");
      getServer().getPluginManager().registerEvents((Listener)new formHelper(), (Plugin)this);
      getServer().getPluginManager().registerEvents((Listener)new ffaListener(), (Plugin)this);
      getServer().getCommandMap().register("", (Command)new ffaCommand(getConfig().getString("setting.command.ffa.name"), getConfig().getString("setting.command.ffa.des")));
