@@ -51,6 +51,9 @@
      String name = player.getLevel().getName();
      return getArenas().getOrDefault(name, null);
    }
+   public Arena getArenaByName(String name){
+       return getArenas().getOrDefault(name,null);
+   }
    public void sendMsgToCon(String s) {
      getServer().getLogger().info("[" + getPrefix() + "]" + s);
    }

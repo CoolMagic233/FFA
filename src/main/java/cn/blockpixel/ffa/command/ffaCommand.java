@@ -15,25 +15,40 @@ public class ffaCommand extends Command {
 
   public boolean execute(CommandSender commandSender, String s, String[] strings) {
     if (commandSender instanceof Player) {
-      Arena arena = FFA.getInstance().getArenaByName((Player)commandSender);
       if (strings.length < 1) {
-        formHelper.sendArenaListForm((Player)commandSender);
+        formHelper.sendArenaListForm((Player) commandSender);
       }
       if (strings.length == 1) {
+        Arena arena = FFA.getInstance().getArenaByName((Player) commandSender);
         if (strings[0].equals(FFA.getInstance().getConfig().getString("setting.command.quit.name"))) {
           if (arena == null) {
             commandSender.sendMessage("[" + FFA.getInstance().getPrefix() + "] §cYou not in arena!");
             return true;
           }
-          if (arena.isPlaying((Player)commandSender)) {
-            arena.quit((Player)commandSender);
+          if (arena.isPlaying((Player) commandSender)) {
+            arena.quit((Player) commandSender);
           } else {
             commandSender.sendMessage("[" + FFA.getInstance().getPrefix() + "] §cYou not in arena!");
           }
         }
+      }
+        if (strings.length == 2) {
+          Arena arena = FFA.getInstance().getArenaByName(strings[1]);
+          if (strings[0].equals(FFA.getInstance().getConfig().getString("setting.command.join.name"))) {
+            if (arena == null) {
+              commandSender.sendMessage("[" + FFA.getInstance().getPrefix() + "] §cYou not in arena!");
+              return true;
+            }
+            if (FFA.getInstance().getArenaByName((Player) commandSender).isPlaying((Player) commandSender)) {
+              arena.quit((Player) commandSender);
+            } else {
+              commandSender.sendMessage("[" + FFA.getInstance().getPrefix() + "] §cYou not in arena!");
+            }
+            arena.join((Player) commandSender);
+          }
+        }
         return true;
       }
-    }
     return false;
   }
 }

@@ -9,6 +9,8 @@ setting:
       des: "ffa arena command"
     quit:
       name: "quit"
+    join:
+      name: "join"
   cooldown:
     ender_pearl:
       enable: true
