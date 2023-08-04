@@ -36,13 +36,12 @@ public class ffaCommand extends Command {
           Arena arena = FFA.getInstance().getArenaByName(strings[1]);
           if (strings[0].equals(FFA.getInstance().getConfig().getString("setting.command.join.name"))) {
             if (arena == null) {
-              commandSender.sendMessage("[" + FFA.getInstance().getPrefix() + "] §cYou not in arena!");
+              commandSender.sendMessage("[" + FFA.getInstance().getPrefix() + "] §cArena not found!");
               return true;
             }
             if (FFA.getInstance().getArenaByName((Player) commandSender).isPlaying((Player) commandSender)) {
               arena.quit((Player) commandSender);
-            } else {
-              commandSender.sendMessage("[" + FFA.getInstance().getPrefix() + "] §cYou not in arena!");
+              return true;
             }
             arena.join((Player) commandSender);
           }
